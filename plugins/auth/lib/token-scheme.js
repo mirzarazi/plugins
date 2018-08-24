@@ -27,8 +27,13 @@ const tokenScheme = function (server, { authOptions, authProvider }) {
         authorization = options.tokenType + ' ' + request.query[options.accessTokenName]
         delete request.query[options.accessTokenName]
       }
+      
+      // Fallback 3 : Header
+      if (options.allowHeaderToken && !authorization && request.headers[options.accessTokenName]) {
+        authorization = options.tokenType + ' ' + request.headers[options.accessTokenName]
+      }
 
-      // Fallback 3 : Throw Error
+      // Fallback 4 : Throw Error
       if (!authorization) {
         throw Boom.unauthorized(null, options.tokenType)
       }
